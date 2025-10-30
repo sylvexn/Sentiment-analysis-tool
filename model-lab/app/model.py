@@ -4,20 +4,17 @@ from PIL import Image
 import torch
 
 MODEL_NAME = "trpakov/vit-face-expression"
-MODEL_READY = False
 
-try:
+extractor = None
+model = None
+
+def load_model():
+    global extractor, model
     extractor = AutoFeatureExtractor.from_pretrained(MODEL_NAME)
     model = AutoModelForImageClassification.from_pretrained(MODEL_NAME)
-except Exception:
-    extractor = None
-    model = None
-    MODEL_READY = False
-else:
-    MODEL_READY = True
 
 def is_model_ready() -> bool:
-    return MODEL_READY
+    return extractor is not None and model is not None
 
 def predict_emotion(image: Image.Image):
     inputs = extractor(images=image, return_tensors="pt")
